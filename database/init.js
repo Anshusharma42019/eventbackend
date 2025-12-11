@@ -6,12 +6,9 @@ const initDatabase = async () => {
   try {
     const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/pass_management';
     await mongoose.connect(mongoUri, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
       serverSelectionTimeoutMS: 5000,
       socketTimeoutMS: 45000,
       maxPoolSize: 10,
-      bufferMaxEntries: 0,
       bufferCommands: false
     });
     console.log('MongoDB connected to:', mongoUri.includes('mongodb.net') ? 'Atlas Cloud' : 'Local');
