@@ -3,16 +3,13 @@ const mongoose = require('mongoose');
 const passTypeSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true,
     enum: ['Teens', 'Couple', 'Family']
   },
   price: {
-    type: Number,
-    required: true
+    type: Number
   },
   max_people: {
-    type: Number,
-    required: true
+    type: Number
   },
   no_of_people: {
     type: Number,
