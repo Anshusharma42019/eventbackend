@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const mongoose = require('mongoose');
 const { initDatabase } = require('./database/init');
 const { apiLimiter, loginLimiter, gateLimiter } = require('./src/middleware/rateLimiter');
 const authRoutes = require('./src/routes/auth');
@@ -41,6 +42,15 @@ app.use(express.static('public'));
 // Root route
 app.get('/', (req, res) => {
   res.json({ message: 'Event Backend API is running!', status: 'OK' });
+});
+
+// Health check
+app.get('/health', (req, res) => {
+  res.json({ 
+    status: 'OK', 
+    database: mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected',
+    timestamp: new Date().toISOString()
+  });
 });
 
 // Routes
