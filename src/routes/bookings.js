@@ -1,0 +1,20 @@
+const express = require('express');
+const { 
+  createBooking, 
+  getBookings, 
+  getBooking,
+  updateBooking,
+  updatePaymentStatus,
+  resendPass
+} = require('../controllers/bookingController');
+const { auth, authorize } = require('../middleware/auth');
+const router = express.Router();
+
+router.post('/', auth, authorize('Admin', 'Sales Staff'), createBooking);
+router.get('/', auth, getBookings);
+router.get('/:id', auth, getBooking);
+router.put('/:id', auth, authorize('Admin'), updateBooking);
+router.put('/:id/payment', auth, authorize('Admin', 'Sales Staff'), updatePaymentStatus);
+router.post('/:id/resend', auth, authorize('Admin', 'Sales Staff'), resendPass);
+
+module.exports = router;
