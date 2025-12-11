@@ -5,7 +5,12 @@ const User = require('../src/models/User');
 const initDatabase = async () => {
   try {
     const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/pass_management';
-    await mongoose.connect(mongoUri);
+    await mongoose.connect(mongoUri, {
+      serverSelectionTimeoutMS: 30000,
+      socketTimeoutMS: 45000,
+      maxPoolSize: 10,
+      bufferMaxEntries: 0
+    });
     console.log('MongoDB connected to:', mongoUri.includes('mongodb.net') ? 'Atlas Cloud' : 'Local');
 
     // Drop old username index if exists
