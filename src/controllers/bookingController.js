@@ -6,7 +6,7 @@ exports.createBooking = async (req, res) => {
   try {
     const { pass_type_id, buyer_name, buyer_phone, payment_mode, notes, total_people, mark_as_paid } = req.body;
     
-    // Check for duplicate phone number
+    // Check  duplicate phone number
     const existingBooking = await Booking.findOne({ buyer_phone });
     if (existingBooking) {
       return res.status(400).json({ 
