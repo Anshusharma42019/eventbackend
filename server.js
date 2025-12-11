@@ -19,7 +19,8 @@ app.use(cors({
   origin: function (origin, callback) {
     const allowedOrigins = [
       'http://localhost:3000',
-      'https://eventbackend-6byp.vercel.app'
+      'https://eventbackend-6byp.vercel.app',
+      'https://eventmanagementfrontend-psi.vercel.app'
     ];
     
     // Allow all Vercel deployments
