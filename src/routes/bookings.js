@@ -5,7 +5,8 @@ const {
   getBooking,
   updateBooking,
   updatePaymentStatus,
-  resendPass
+  resendPass,
+  debugData
 } = require('../controllers/bookingController');
 const { auth, authorize } = require('../middleware/auth');
 const router = express.Router();
@@ -18,5 +19,6 @@ router.get('/:id', auth, getBooking);
 router.put('/:id', auth, authorize('Admin'), updateBooking);
 router.put('/:id/payment', auth, authorize('Admin', 'Sales Staff'), updatePaymentStatus);
 router.post('/:id/resend', auth, authorize('Admin', 'Sales Staff'), resendPass);
+router.get('/debug/data', debugData);
 
 module.exports = router;
