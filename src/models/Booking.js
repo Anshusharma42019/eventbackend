@@ -3,19 +3,39 @@ const mongoose = require('mongoose');
 const passHolderSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true
+    required: false
   },
   phone: {
     type: String
   }
 });
 
-const bookingSchema = new mongoose.Schema({
+const passSchema = new mongoose.Schema({
   pass_type_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'PassType',
     required: true
   },
+  pass_type_name: {
+    type: String,
+    required: true
+  },
+  pass_type_price: {
+    type: Number,
+    required: true
+  },
+  people_count: {
+    type: Number,
+    required: true
+  },
+  pass_holders: [passHolderSchema],
+  people_entered: {
+    type: Number,
+    default: 0
+  }
+});
+
+const bookingSchema = new mongoose.Schema({
   buyer_name: {
     type: String,
     required: true
@@ -24,7 +44,11 @@ const bookingSchema = new mongoose.Schema({
     type: String,
     required: false
   },
-  pass_holders: [passHolderSchema],
+  passes: [passSchema],
+  total_passes: {
+    type: Number,
+    required: true
+  },
   total_people: {
     type: Number,
     required: true
@@ -49,7 +73,7 @@ const bookingSchema = new mongoose.Schema({
   checked_in_at: {
     type: Date
   },
-  people_entered: {
+  total_people_entered: {
     type: Number,
     default: 0
   },
