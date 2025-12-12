@@ -36,6 +36,19 @@ const passSchema = new mongoose.Schema({
 });
 
 const bookingSchema = new mongoose.Schema({
+  // Old structure fields for backward compatibility
+  pass_type_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'PassType',
+    required: false
+  },
+  pass_holders: [passHolderSchema],
+  people_entered: {
+    type: Number,
+    default: 0
+  },
+  
+  // New structure fields
   buyer_name: {
     type: String,
     required: true
@@ -47,7 +60,7 @@ const bookingSchema = new mongoose.Schema({
   passes: [passSchema],
   total_passes: {
     type: Number,
-    required: true
+    required: false
   },
   total_people: {
     type: Number,
@@ -81,7 +94,8 @@ const bookingSchema = new mongoose.Schema({
     type: String
   }
 }, {
-  timestamps: true
+  timestamps: true,
+  strictPopulate: false
 });
 
 // Generate booking ID in format NY2025-000123

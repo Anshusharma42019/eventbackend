@@ -14,11 +14,11 @@ exports.searchPass = async (req, res) => {
     let booking;
     
     // First try mobile number
-    booking = await Booking.findOne({ buyer_phone: search_value }).populate('passes.pass_type_id');
+    booking = await Booking.findOne({ buyer_phone: search_value });
     
     // If not found, try Pass ID
     if (!booking) {
-      const allBookings = await Booking.find().populate('passes.pass_type_id');
+      const allBookings = await Booking.find();
       booking = allBookings.find(b => b.booking_id === search_value);
     }
 
@@ -80,7 +80,7 @@ exports.markEntry = async (req, res) => {
       return res.status(403).json({ message: 'Invalid admin PIN' });
     }
     
-    const booking = await Booking.findById(booking_id).populate('passes.pass_type_id');
+    const booking = await Booking.findById(booking_id);
     if (!booking) {
       return res.status(404).json({ message: 'Booking not found' });
     }
