@@ -60,6 +60,9 @@ const bookingSchema = new mongoose.Schema({
   },
   scanned_by: {
     type: String
+  },
+  payment_screenshot: {
+    type: String
   }
 }, {
   timestamps: true

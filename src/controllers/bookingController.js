@@ -23,7 +23,8 @@ exports.createBooking = async (req, res) => {
       total_amount: calculatedAmount,
       payment_status: req.body.payment_status || (req.body.mark_as_paid ? 'Paid' : 'Pending'),
       payment_mode: req.body.payment_mode || 'Cash',
-      notes: req.body.notes || ''
+      notes: req.body.notes || '',
+      payment_screenshot: req.body.payment_screenshot || null
     };
     
     console.log('Booking data before save:', bookingData);

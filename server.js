@@ -10,6 +10,7 @@ const passTypeRoutes = require('./src/routes/passTypes');
 const bookingRoutes = require('./src/routes/bookings');
 const entryRoutes = require('./src/routes/entry');
 const reportRoutes = require('./src/routes/reports');
+const uploadRoutes = require('./src/routes/upload');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -62,6 +63,7 @@ app.use('/api/pass-types', passTypeRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/entry', entryRoutes);
 app.use('/api/reports', reportRoutes);
+app.use('/api/upload', uploadRoutes);
 
 // Initialize database and start server
 initDatabase().then(() => {
