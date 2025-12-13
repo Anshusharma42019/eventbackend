@@ -3,44 +3,46 @@ const PassType = require('../models/PassType');
 
 exports.createBooking = async (req, res) => {
   try {
-    const mongoose = require('mongoose');
-    
-    // Fetch pass type details
     const passType = await PassType.findById(req.body.pass_type_id);
     if (!passType) {
-      return res.status(404).json({ message: 'Pass type not found' });
+      return res.status(400).json({ message: 'Invalid pass type' });
     }
+
+    const totalPasses = req.body.total_passes || 1;
+    const calculatedAmount = passType.price * totalPasses;
+    
+    console.log('Creating booking with total_amount:', calculatedAmount);
     
     const bookingData = {
-      pass_type_id: new mongoose.Types.ObjectId(req.body.pass_type_id),
+      pass_type_id: req.body.pass_type_id,
       buyer_name: req.body.buyer_name,
       buyer_phone: req.body.buyer_phone,
-      total_people: req.body.total_people || 1,
       pass_holders: req.body.pass_holders || [],
-      payment_mode: req.body.payment_mode || 'Cash',
-      payment_status: req.body.mark_as_paid ? 'Paid' : 'Pending',
-      notes: req.body.notes || `1 ${passType.name} pass booked. ${req.body.payment_mode || 'Cash'} payment received. Amount: ₹${passType.price}`,
       people_entered: 0,
-      checked_in: false,
-      createdAt: new Date(),
-      updatedAt: new Date()
+      total_people: parseInt(req.body.total_people) || passType.max_people,
+      total_amount: calculatedAmount,
+      payment_status: req.body.payment_status || (req.body.mark_as_paid ? 'Paid' : 'Pending'),
+      payment_mode: req.body.payment_mode || 'Cash',
+      notes: req.body.notes || ''
     };
+    
+    console.log('Booking data before save:', bookingData);
+    const booking = new Booking(bookingData);
 
-    // Insert directly to bypass all Mongoose middleware
-    const result = await mongoose.connection.db.collection('bookings').insertOne(bookingData);
+    const savedBooking = await booking.save();
+    console.log('Saved booking total_amount:', savedBooking.total_amount);
     
-    // Add virtual booking_id and pass type info
-    const booking = {
-      ...bookingData,
-      _id: result.insertedId,
-      booking_id: `NY2025-${result.insertedId.toString().slice(-6)}`,
-      id: result.insertedId.toString(),
-      pass_type_name: passType.name,
-      pass_type_price: passType.price
-    };
+    // Force update total_amount if not saved
+    await Booking.findByIdAndUpdate(savedBooking._id, { total_amount: calculatedAmount });
     
-    res.status(201).json(booking);
+    const response = savedBooking.toJSON();
+    response.pass_type_name = passType.name;
+    response.pass_type_price = passType.price;
+    response.total_amount = calculatedAmount;
+    
+    res.status(201).json(response);
   } catch (error) {
+    console.error('Booking creation error:', error);
     res.status(500).json({ message: error.message });
   }
 };

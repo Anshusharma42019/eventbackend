@@ -28,6 +28,11 @@ const bookingSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  total_amount: {
+    type: Number,
+    required: false,
+    default: 0
+  },
   pass_holders: [passHolderSchema],
   people_entered: {
     type: Number,
@@ -67,7 +72,17 @@ bookingSchema.virtual('booking_id').get(function() {
   return `NY${year}-${paddedId}`;
 });
 
-bookingSchema.set('toJSON', { virtuals: true });
+bookingSchema.set('toJSON', { virtuals: true, transform: function(doc, ret) {
+  if (ret.total_amount === undefined || ret.total_amount === null) {
+    ret.total_amount = 0;
+  }
+  return ret;
+}});
 bookingSchema.set('toObject', { virtuals: true });
 
-module.exports = mongoose.models.Booking || mongoose.model('Booking', bookingSchema);
+// Clear any existing model to force schema reload
+if (mongoose.models.Booking) {
+  delete mongoose.models.Booking;
+}
+
+module.exports = mongoose.model('Booking', bookingSchema);
