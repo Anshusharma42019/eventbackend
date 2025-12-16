@@ -55,10 +55,14 @@ exports.getBookings = async (req, res) => {
       .sort({ createdAt: -1 })
       .lean();
     
-    // Add booking_id to each booking
     const bookingsWithId = bookings.map(booking => ({
       ...booking,
-      booking_id: `NY2025-${booking._id.toString().slice(-6)}`
+      booking_id: `NY2025-${booking._id.toString().slice(-6)}`,
+      pass_holders: booking.pass_holders || [],
+      people_entered: booking.people_entered || 0,
+      total_amount: booking.total_amount || 0,
+      payment_screenshot: booking.payment_screenshot || null,
+      notes: booking.notes || ''
     }));
     
     res.json(bookingsWithId);
@@ -70,20 +74,22 @@ exports.getBookings = async (req, res) => {
 
 exports.getBooking = async (req, res) => {
   try {
-    const booking = await Booking.findById(req.params.id).populate('pass_type_id');
+    const booking = await Booking.findById(req.params.id).populate('pass_type_id').lean();
     if (!booking) {
       return res.status(404).json({ message: 'Booking not found' });
     }
     
-    // If populate didn't work, manually fetch pass type
-    if (!booking.pass_type_id || !booking.pass_type_id.name) {
-      const passType = await PassType.findById(booking.pass_type_id);
-      if (passType) {
-        booking.pass_type_id = passType;
-      }
-    }
+    const bookingWithId = {
+      ...booking,
+      booking_id: `NY2025-${booking._id.toString().slice(-6)}`,
+      pass_holders: booking.pass_holders || [],
+      people_entered: booking.people_entered || 0,
+      total_amount: booking.total_amount || 0,
+      payment_screenshot: booking.payment_screenshot || null,
+      notes: booking.notes || ''
+    };
     
-    res.json(booking);
+    res.json(bookingWithId);
   } catch (error) {
     console.error('Get booking error:', error);
     res.status(404).json({ message: 'Booking not found' });
@@ -92,8 +98,17 @@ exports.getBooking = async (req, res) => {
 
 exports.updateBooking = async (req, res) => {
   try {
-    const booking = await Booking.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    res.json(booking);
+    const booking = await Booking.findByIdAndUpdate(req.params.id, req.body, { new: true }).populate('pass_type_id').lean();
+    const bookingWithId = {
+      ...booking,
+      booking_id: `NY2025-${booking._id.toString().slice(-6)}`,
+      pass_holders: booking.pass_holders || [],
+      people_entered: booking.people_entered || 0,
+      total_amount: booking.total_amount || 0,
+      payment_screenshot: booking.payment_screenshot || null,
+      notes: booking.notes || ''
+    };
+    res.json(bookingWithId);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
