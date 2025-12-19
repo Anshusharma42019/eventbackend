@@ -21,6 +21,7 @@ app.use(cors({
     const allowedOrigins = [
       'http://localhost:3000',
       'https://eventbackend-blond.vercel.app',
+      'https://eventmanagementfrontend-orcin.vercel.app/',
     ];
     
     // Allow all Vercel deployments
