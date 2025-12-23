@@ -24,7 +24,9 @@ exports.createBooking = async (req, res) => {
       payment_status: req.body.payment_status || (req.body.mark_as_paid ? 'Paid' : 'Pending'),
       payment_mode: req.body.payment_mode || 'Cash',
       notes: req.body.notes || '',
-      payment_screenshot: req.body.payment_screenshot || null
+      payment_notes: req.body.payment_notes || '',
+      payment_screenshot: req.body.payment_screenshot || null,
+      is_owner_pass: req.body.is_owner_pass || false
     };
     
     console.log('Booking data before save:', bookingData);
@@ -61,7 +63,9 @@ exports.getBookings = async (req, res) => {
       people_entered: booking.people_entered || 0,
       total_amount: booking.total_amount || 0,
       payment_screenshot: booking.payment_screenshot || null,
-      notes: booking.notes || ''
+      notes: booking.notes || '',
+      payment_notes: booking.payment_notes || '',
+      is_owner_pass: booking.is_owner_pass || false
     }));
     
     res.json(bookingsWithDefaults);
@@ -84,7 +88,9 @@ exports.getBooking = async (req, res) => {
       people_entered: booking.people_entered || 0,
       total_amount: booking.total_amount || 0,
       payment_screenshot: booking.payment_screenshot || null,
-      notes: booking.notes || ''
+      notes: booking.notes || '',
+      payment_notes: booking.payment_notes || '',
+      is_owner_pass: booking.is_owner_pass || false
     };
     
     res.json(bookingWithDefaults);
@@ -103,7 +109,9 @@ exports.updateBooking = async (req, res) => {
       people_entered: booking.people_entered || 0,
       total_amount: booking.total_amount || 0,
       payment_screenshot: booking.payment_screenshot || null,
-      notes: booking.notes || ''
+      notes: booking.notes || '',
+      payment_notes: booking.payment_notes || '',
+      is_owner_pass: booking.is_owner_pass || false
     };
     res.json(bookingWithDefaults);
   } catch (error) {

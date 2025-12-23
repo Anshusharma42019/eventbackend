@@ -51,6 +51,10 @@ const bookingSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
+  payment_notes: {
+    type: String,
+    default: ''
+  },
   checked_in: {
     type: Boolean,
     default: false
@@ -63,6 +67,10 @@ const bookingSchema = new mongoose.Schema({
   },
   payment_screenshot: {
     type: String
+  },
+  is_owner_pass: {
+    type: Boolean,
+    default: false
   }
 }, {
   timestamps: true
