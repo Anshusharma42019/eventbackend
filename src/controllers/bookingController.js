@@ -10,7 +10,16 @@ exports.createBooking = async (req, res) => {
 
     const totalPasses = req.body.total_passes || 1;
     const customPrice = req.body.custom_price ? parseInt(req.body.custom_price) : null;
-    const calculatedAmount = customPrice ? (customPrice * totalPasses) : (passType.price * totalPasses);
+    
+    // Use custom price as-is, or calculate from pass type price
+    let calculatedAmount;
+    if (customPrice !== null && customPrice > 0) {
+      calculatedAmount = customPrice; // Use custom price directly
+      console.log('Using custom price:', customPrice);
+    } else {
+      calculatedAmount = passType.price * totalPasses; // Use default calculation
+      console.log('Using default price calculation:', passType.price, 'x', totalPasses, '=', calculatedAmount);
+    }
     
     console.log('Creating booking:', {
       default_price: passType.price,
@@ -43,8 +52,13 @@ exports.createBooking = async (req, res) => {
     const savedBooking = await booking.save();
     console.log('Saved booking total_amount:', savedBooking.total_amount);
     
-    // Force update total_amount if not saved
-    await Booking.findByIdAndUpdate(savedBooking._id, { total_amount: calculatedAmount });
+    // Ensure total_amount is properly saved
+    if (savedBooking.total_amount !== calculatedAmount) {
+      await Booking.findByIdAndUpdate(savedBooking._id, { 
+        total_amount: calculatedAmount,
+        custom_price: customPrice 
+      });
+    }
     
     const response = savedBooking.toJSON();
     response.pass_type_name = passType.name;
@@ -143,7 +157,22 @@ exports.getBooking = async (req, res) => {
 
 exports.updateBooking = async (req, res) => {
   try {
-    const booking = await Booking.findByIdAndUpdate(req.params.id, req.body, { new: true }).populate('pass_type_id').lean();
+    const updateData = { ...req.body };
+    
+    // Handle custom price logic
+    if (req.body.custom_price !== undefined) {
+      updateData.custom_price = req.body.custom_price;
+      if (req.body.custom_price) {
+        updateData.total_amount = parseInt(req.body.custom_price);
+      }
+    }
+    
+    const booking = await Booking.findByIdAndUpdate(req.params.id, updateData, { new: true }).populate('pass_type_id').lean();
+    
+    if (!booking) {
+      return res.status(404).json({ message: 'Booking not found' });
+    }
+    
     const bookingWithDefaults = {
       ...booking,
       pass_holders: booking.pass_holders || [],
