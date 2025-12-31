@@ -10,21 +10,23 @@ exports.createBooking = async (req, res) => {
 
     const totalPasses = req.body.total_passes || 1;
     const customPrice = req.body.custom_price ? parseInt(req.body.custom_price) : null;
+    const isOwnerPass = req.body.is_owner_pass || false;
     
     // Use custom price as-is, or calculate from pass type price
     let calculatedAmount;
-    if (customPrice !== null && customPrice > 0) {
+    if (isOwnerPass) {
+      calculatedAmount = 0; // Owner pass is always free
+    } else if (customPrice !== null && customPrice > 0) {
       calculatedAmount = customPrice; // Use custom price directly
-      console.log('Using custom price:', customPrice);
     } else {
       calculatedAmount = passType.price * totalPasses; // Use default calculation
-      console.log('Using default price calculation:', passType.price, 'x', totalPasses, '=', calculatedAmount);
     }
     
     console.log('Creating booking:', {
       default_price: passType.price,
       custom_price: customPrice,
       total_passes: totalPasses,
+      is_owner_pass: isOwnerPass,
       calculated_amount: calculatedAmount
     });
     
